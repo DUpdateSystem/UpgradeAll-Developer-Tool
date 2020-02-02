@@ -6,12 +6,13 @@ import json
 import uuid
 import re
 
+
 def isFile(path):
     rule_list = path + 'rules/rules_list.json'
     app_json = path + 'rules/apps/'
-    if os.access(rule_list,os.F_OK):
-        if os.access(rule_list,os.W_OK):
-            if os.access(app_json,os.W_OK):
+    if os.access(rule_list, os.F_OK):
+        if os.access(rule_list, os.W_OK):
+            if os.access(app_json, os.W_OK):
                 return True
             else:
                 print('apps文件夹不存在或不可写入!')
@@ -20,44 +21,38 @@ def isFile(path):
             return False
     else:
         print('rules_list.json文件不存在!')
-        print('路径:'+rule_list)
+        print('路径:' + rule_list)
         return False
+
 
 def read_file(path):
     rule_list = path + 'rules/rules_list.json'
-    with open(rule_list,'r') as f:
+    with open(rule_list, 'r') as f:
         rule_list = json.load(f)
     uuid_dict = {}
     hub_dict = {}
     for index in range(len(rule_list['hub_list'])):
-        hub_dict[rule_list['hub_list'][index]['hub_config_name']]=rule_list['hub_list'][index]['hub_config_uuid']
+        hub_dict[rule_list['hub_list'][index]['hub_config_name']] = rule_list[
+            'hub_list'][index]['hub_config_uuid']
         uuid_dict[rule_list['hub_list'][index]['hub_config_uuid']] = 'True'
     app_name_dict = {}
     for index in range(len(rule_list['app_list'])):
-                       app_name_dict[rule_list['app_list'][index]['app_config_name']] = 'True'
-                       uuid_dict[rule_list['app_list'][index]['app_config_uuid']] = 'True'
-    return [hub_dict,app_name_dict,uuid_dict]
+        app_name_dict[rule_list['app_list'][index]['app_config_name']] = 'True'
+        uuid_dict[rule_list['app_list'][index]['app_config_uuid']] = 'True'
+    return [hub_dict, app_name_dict, uuid_dict]
 
-def mkrule(lists,path):
+
+def mkrule(lists, path):
     item = {}
     index = 0
-    print(
-            "\033[1;35;40m",
-            "*" * 55,
-            "请选择来源".center(45),
-            "\n",
-            "*" * 55,
-            "\033[1;34;40m",
-            "\n",
-            "\t序号\t来源",
-            "\033[1;36;40m",
-            "\n")
+    print("\033[1;35;40m", "*" * 55, "请选择来源".center(45), "\n", "*" * 55,
+          "\033[1;34;40m", "\n", "\t序号\t来源", "\033[1;36;40m", "\n")
     i = 0
     for key in lists[0]:
-        print('\t',i,'\t',key)
+        print('\t', i, '\t', key)
         item[i] = key
         i += 1
-    print('\nnote:输入exit退出!输入exit退出!输入exit退出!','\033[1;33;40m')
+    print('\nnote:输入exit退出!输入exit退出!输入exit退出!', '\033[1;33;40m')
     myuuid = uuid.uuid1()
     while myuuid in lists[2].keys():
         myuuid = uuid.uuid1()
@@ -89,6 +84,14 @@ def mkrule(lists,path):
                 packagename = packagename[2]
                 print(packagename)
                 break
+            elif get_name == 'F-droid':
+                if url.endswith('/'):
+                    url = url[:-1]
+                packagename = url.split('f-droid.org')
+                packagename = packagename[1].split('/')
+                packagename = packagename[3]
+                print(packagename)
+                break
             else:
                 packagename = ''
                 break
@@ -100,8 +103,8 @@ def mkrule(lists,path):
     while Flag:
         name = input('配置名称: ')
         Flag = name in lists[1].keys()
-            #print('braek')
-            #break
+        #print('braek')
+        #break
 
     myconfig = {}
     data = json.loads(json.dumps(myconfig))
@@ -114,9 +117,9 @@ def mkrule(lists,path):
     data['app_config'] = app_config
     target_checker = {'api': 'App_Package', 'extra_string': packagename}
     data['target_checker'] = target_checker
-    with open(path+'rules/apps/%s.json'%name,'w')as f:
-        json.dump(data,f, ensure_ascii=False, indent=2)
-    with open(path+'rules/rules_list.json', 'r') as js:
+    with open(path + 'rules/apps/%s.json' % name, 'w') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    with open(path + 'rules/rules_list.json', 'r') as js:
         list = json.load(js)
         mylist = {}
         mylists = json.loads(json.dumps(mylist))
@@ -124,10 +127,8 @@ def mkrule(lists,path):
         mylists['app_config_uuid'] = str(myuuid)
         mylists['app_config_file_name'] = name
         list['app_list'].append(mylists)
-    with open(path+'rules/rules_list.json', 'w') as f:
+    with open(path + 'rules/rules_list.json', 'w') as f:
         json.dump(list, f, indent=2, ensure_ascii=False)
-
-
 
 
 if __name__ == '__main__':
@@ -144,6 +145,4 @@ if __name__ == '__main__':
         print('请检查tool.config中的路径!')
         os._exit(0)
     read_list = read_file(project)
-    mkrule(read_list,project)
-
-
+    mkrule(read_list, project)
