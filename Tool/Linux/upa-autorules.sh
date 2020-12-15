@@ -1,32 +1,11 @@
 #!/bin/bash
-echo '########################################'
-echo '# UpgradeAll跟踪项配置文件自动生成脚本 #'
-echo '# 作者:坂本dalao                       #'
-echo '# 版本:1.0                             #'
-echo '########################################'
-
-#        ┏┓　　　┏┓+ +
-#　　　┏┛┻━━━┛┻┓ + +
-#　　　┃　　　　　　　┃ 　
-#　　　┃　　　━　　　┃ ++ + + +
-#　　 ████━████ ┃+
-#　　　┃　　　　　　　┃ +
-#　　　┃　　　┻　　　┃
-#　　　┃　　　　　　　┃ + +
-#　　　┗━┓　　　┏━┛
-#　　　　　┃　　　┃　　　　　　　　　　　
-#　　　　　┃　　　┃ + + + +
-#　　　　　┃　　　┃　　　　Codes are far away from bugs with the animal protecting　　　
-#　　　　　┃　　　┃ + 　　　　神兽保佑,代码无bug　　
-#　　　　　┃　　　┃
-#　　　　　┃　　　┃　　+　　　　　　　　　
-#　　　　　┃　 　　┗━━━┓ + +
-#　　　　　┃ 　　　　　　　┣┓
-#　　　　　┃ 　　　　　　　┏┛
-#　　　　　┗┓┓┏━┳┓┏┛ + + + +
-#　　　　　　┃┫┫　┃┫┫
-#　　　　　　┗┻┛　┗┻┛+ + + +
-
+cat <<EOF
+########################################
+# UpgradeAll跟踪项配置文件自动生成脚本 #
+# 作者:坂本dalao                       #
+# 版本:1.1                             #
+########################################
+EOF
 # 基本参数输入
 read -p "请输入跟踪项名称：" APPNAME
 # 判断变量是否为空，为空则报错，反之将结果输出至/dev/null
@@ -96,21 +75,23 @@ esac
 echo ${HUBUUID:?软件源不能为空} > /dev/null && clear
 
 # 输出结果
-echo "{
-  \"base_version\": 1,
-  \"uuid\": \"$(cat /proc/sys/kernel/random/uuid)\",
-  \"info\": {
-    \"app_name\": \"${APPNAME}\",
-    \"config_version\": 1,
-    \"url\": \"${APPURL}\"
+cat <<EOF | tee "${APPNAME}".json && echo "已在当前目录生成${APPNAME}.json"
+{
+  "base_version": 1,
+  "uuid": "$(cat /proc/sys/kernel/random/uuid)",
+  "info": {
+    "app_name": "${APPNAME}",
+    "config_version": 1,
+    "url": "${APPURL}"
   },
-  \"app_config\": {
-    \"hub_info\": {
-      \"hub_uuid\": \"${HUBUUID}\"
+  "app_config": {
+    "hub_info": {
+      "hub_uuid": "${HUBUUID}"
     },
-    \"target_checker\": {
-      \"api\": \"${API:-App_Package}\",
-      \"extra_string\": \"${APKNAME}\"
+    "target_checker": {
+      "api": "${API:-App_Package}",
+      "extra_string": "${APKNAME}"
     }
   }
-}" > "${APPNAME}".json && echo "已在当前目录生成${APPNAME}.json"
+}
+EOF
